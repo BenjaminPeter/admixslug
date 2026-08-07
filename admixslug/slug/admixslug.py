@@ -1,5 +1,4 @@
 import logging
-from pprint import pprint
 from collections import Counter, defaultdict
 from copy import deepcopy
 
@@ -31,12 +30,10 @@ EST_DEFAULT = dict(
 def run_admixslug(
     target_file,
     ref_files,
-    geno_file=None,
     states=("AFR", "VIN", "DEN"),
     state_file=None,
     cont_id="AFR",
     split_lib=True,
-    prior=None,
     ancestral=None,
     sex=None,
     autosomes_only=False,
@@ -193,9 +190,9 @@ def run_admixslug(
     # output formating from here
     if output["output_fstats"]:
         f2s, f3s, f4s, pis = calc_fstats(jk_sfs, states, name=target)
-        df_f2 = write_f2_table(f2s, outname=f"{outname}.f2.jk.xz")
-        df_f3 = write_f3_table(f3s, outname=f"{outname}.f3.jk.xz")
-        df_f4 = write_f4_table(f4s, outname=f"{outname}.f4.jk.xz")
+        write_f2_table(f2s, outname=f"{outname}.f2.jk.xz")
+        write_f3_table(f3s, outname=f"{outname}.f3.jk.xz")
+        write_f4_table(f4s, outname=f"{outname}.f4.jk.xz")
 
         pis.to_csv(f"{outname}.pi.jk.xz", float_format="%.6f", index=False)
 
@@ -253,7 +250,7 @@ def run_admixslug(
         )
 
     if output["output_vcf"]:
-        df_snp = write_vcf(
+        write_vcf(
             df=df,
             data=data,
             posterior_gt=posterior_gt,

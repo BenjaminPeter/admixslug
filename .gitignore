@@ -4,6 +4,7 @@
 *html
 *so
 build/
+dist/
 admixfrog.egg-info/
 __pycache__/
 *aux

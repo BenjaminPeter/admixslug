@@ -45,7 +45,7 @@ def update_ftau_numeric(old_F, old_tau, data, post_g, update_F=True):
     """
 
     if not update_F:
-        raise NotImplemented("update_F=False currently disabled")
+        raise NotImplementedError("update_F=False currently disabled")
 
     tau, F = np.zeros(data.n_sfs), np.zeros(data.n_sfs)
     tau[:], F[:] = old_tau, old_F
@@ -100,7 +100,7 @@ def update_tau_only(old_tau, data, post_g):
     tau = np.zeros(data.n_sfs)
     tau[:] = old_tau
 
-    log_.debug(f"updating tau only ")
+    log_.debug("updating tau only ")
 
     for k in range(data.n_sfs):
         G0, G1, G2 = np.sum(post_g[data.SNP2SFS == k], 0)

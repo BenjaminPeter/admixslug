@@ -48,6 +48,7 @@ class SlugPars(object):
         self.prev_F = np.zeros_like(self.F)
         self.prev_cont = np.zeros_like(self.cont)
         self.prev_ll = -np.inf
+        self.prev_e, self.prev_b = 0, 0
 
     def __sub__(self, other):
         return self.pars - other.pars
