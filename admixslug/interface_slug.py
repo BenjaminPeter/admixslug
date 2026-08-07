@@ -1,11 +1,11 @@
 """basic command line interfaces"""
 
-import admixslug
 import argparse
 import os
 from pprint import pprint, pformat
-import numpy as np
 import logging
+
+import numpy as np
 from os.path import isfile
 
 from .slug import run_admixslug
@@ -13,17 +13,15 @@ from .utils.bam import process_bam2
 from .utils.vcf import (
     load_pop_file,
     vcf_to_ref,
-    load_random_read_samples,
-    vcf_to_sample,
-)
+    load_random_read_samples)
 from .utils.log import setup_log
 from .options import INFILE_OPTIONS, REFFILE_OPTIONS
 from .options import ALGORITHM_OPTIONS_SLUG
 from .options import add_target_file_options
 from .options import add_filter_options
-from .options import add_ref_options
 from .options import add_pop_options, add_base_options_slug
 from .options import add_output_options_slug, add_estimation_options_slug
+import admixslug
 
 
 def run_sfs():
@@ -162,7 +160,7 @@ def run_sfs():
 
             pop2sample = load_pop_file(reffile_pars["state_file"], V["states"])
             random_read_samples = load_random_read_samples(reffile_pars["state_file"])
-            logger.debug(pformat(random_read_samples))
+            logging.debug(pformat(random_read_samples))
             vcf_to_ref(
                 V["ref_files"][0],
                 reffile_pars["vcf_file"],
@@ -215,7 +213,7 @@ def run_sfs():
                                  regenerate"""
                 )
             logging.info("creating input from bam file")
-            process_bam(
+            process_bam2(
                 outfile=target_pars["target_file"],
                 bamfile=target_pars["bamfile"],
                 ref=V["ref_files"][0],
@@ -233,8 +231,6 @@ def run_sfs():
         target_pars["target"] = os.path.basename(target_pars["target_file"]).split("_")[
             0
         ]
-
-    from . import __version__
 
     logging.info(f"admixslug {__version__}")
 

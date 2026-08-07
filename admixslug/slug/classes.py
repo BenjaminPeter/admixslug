@@ -2,7 +2,6 @@ from dataclasses import dataclass
 import numpy as np
 import logging
 from typing import Any
-from scipy.special import logit, expit
 import pandas as pd
 from ..utils.utils import (
     make_full_read_df,
@@ -175,7 +174,6 @@ class SlugData:
         super().__setattr__("n_sfs", np.max(self.SNP2SFS) + 1)
         super().__setattr__("n_rgs", np.max(self.OBS2RG) + 1)
         assert 1 + np.max(self.OBS2SNP) == self.n_snps
-        assert 1 + np.max(self.OBS2RG) == self.n_rgs
         self.REF.flags.writeable = False
         self.ALT.flags.writeable = False
         self.psi.flags.writeable = False

@@ -1,8 +1,8 @@
-import argparse
-from pprint import pprint, pformat
-import numpy as np
 import logging
+import argparse
 from os.path import isfile
+from pprint import pformat
+import numpy as np
 
 from .utils.log import setup_log
 from .utils.bam import process_bam2
@@ -49,7 +49,7 @@ def do_ref():
 
 
 def geno_to_sample(outfile, geno, ref_file, random_read, sample_id):
-    raise NotImplemented("Not finished")
+    raise NotImplementedError("Not finished")
     df = read_geno(geno, target_ind=sample_id)
 
     ref = pd.read_csv(ref_file)
