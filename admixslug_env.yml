@@ -1,4 +1,4 @@
-name: admixslug_0.1_August16
+name: admixslug_env
 channels:
   - conda-forge
   - bioconda
@@ -43,4 +43,3 @@ dependencies:
     - scipy==1.15.3
     - six==1.17.0
     - tzdata==2025.2
-prefix: /home/arev_suemer/.conda/envs/admixslug_0.1_August16
