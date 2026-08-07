@@ -1,10 +1,10 @@
-import numpy as np
 import logging
-import pandas as pd
-import yaml
 from pprint import pprint
 from collections import Counter, defaultdict
 from copy import deepcopy
+
+import numpy as np
+import pandas as pd
 from ..utils.input import load_read_data, load_ref, filter_ref, load_gt_data
 from ..utils.output import write_pars_table
 from ..utils.output_slug import write_snp_table_slug, write_cont_table_slug
@@ -13,7 +13,7 @@ from ..utils.output_slug import write_f3_table, write_f4_table, write_f2_table
 from ..utils.utils import guess_sex
 from ..utils.states import States
 from .classes import SlugController, SlugReads, SlugPars
-from .em import em, squarem, squarem_gt
+from .em import squarem, squarem_gt
 from .emissions import full_posterior_genotypes, full_posterior_genotypes_gt
 from .fstats import calc_fstats, summarize_f3, summarize_f4, summarize_pi, summarize_f2
 
