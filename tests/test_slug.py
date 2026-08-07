@@ -1,6 +1,6 @@
-from admixfrog.slug.classes import *
-from admixfrog.slug.emissions import *
-from admixfrog.slug.em import *
+from admixslug.slug.classes import *
+from admixslug.slug.emissions import *
+from admixslug.slug.em import *
 import numpy as np
 import pytest
 

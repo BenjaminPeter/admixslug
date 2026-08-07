@@ -1,24 +1,18 @@
 [tool.poetry]
-name = "admixfrog"
+name = "admixslug"
 version = "0.0.0"
-description = "Local Ancestry Inference for low-coverage ancient DNA data"
-authors = ["benjamin_peter <benjamin_peter@eva.mpg.de>"]
+description = "A genotype-likelihood method for contaminated low-coverage archaic human genetic data"
+authors = ["benjamin_peter <benjamin_peter@eva.mpg.de>", "arev_suemer@eva.mpg.de"]
 license = "BSD"
 readme = "README.md"
 packages = [
-    { include = "admixfrog" },
-]
-include = [
-    # C extensions must be included in the wheel distributions
-    { path = "admixfrog/gll/*.so", format = "wheel" },
-    { path = "admixfrog/utils/*.so", format = "wheel" },
+    { include = "admixslug" },
 ]
 
 [build-system]
 requires = ["poetry-core>=1.2.0", 
     "poetry-dynamic-versioning", 
     "setuptools", 
-    "Cython>=0.29",
     "scipy>=1.1"]
 #build-backend = "poetry.core.masonry.api"
 build-backend = "poetry_dynamic_versioning.backend"
@@ -36,7 +30,6 @@ scipy = ">=1.1"
 pybedtools = ">=0.10"
 pysam = ">=0.15.0"
 pyyaml = ">=5.0"
-Cython = ">=3.0"
 setuptools = ">=75"
 
 [tool.poetry.group.dev.dependencies]
@@ -53,12 +46,8 @@ pattern  = "^(?P<base>\\d+\\.\\d+\\.\\d+)(-?((?P<stage>[a-zA-Z]+)\\.?(?P<revisio
 
 
 [tool.poetry.scripts]
-admixfrog = 'admixfrog:run_frog'
-admixfrog-bam = 'admixfrog:bam'
-admixfrog-bam2 = 'admixfrog:bam2'
-admixfrog-rle = 'admixfrog:do_rle'
-admixfrog-profile = 'admixfrog:profile_frog'
-admixslug-profile = 'admixfrog:profile_slug'
-admixfrog-ref = 'admixfrog:do_ref'
-admixslug = 'admixfrog:run_sfs'
+admixslug-bam = 'admixslug:bam2'
+admixslug-profile = 'admixslug:profile_slug'
+admixslug-ref = 'admixslug:do_ref'
+admixslug = 'admixslug:run_sfs'
 

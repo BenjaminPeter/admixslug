@@ -1,9 +1,9 @@
 """basic command line interfaces
 """
+import admixslug
 import argparse
 import os
 from pprint import pprint, pformat
-import admixfrog
 import numpy as np
 import logging
 from os.path import isfile
@@ -34,7 +34,7 @@ def run_sfs():
     )
 
     parser.add_argument(
-        "-v", "--version", action="version", version="%(prog)s " + admixfrog.__version__
+        "-v", "--version", action="version", version="%(prog)s " + admixslug.__version__
     )
 
     parser.add_argument(

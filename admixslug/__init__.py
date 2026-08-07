@@ -1,7 +1,5 @@
 from .interface_slug import run_sfs
-from .interface_frog import run_frog, do_rle
-from .interface_io import bam, bam2, do_ref
-from .interface_frog import profile as profile_frog
+from .interface_io import bam2, do_ref
 from .interface_slug import profile as profile_slug
 import importlib
 

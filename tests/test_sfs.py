@@ -37,7 +37,7 @@ def test_jk_tau_only(script_runner):
 
 def test_slug_input(script_runner):
     """case where we generate input file"""
-    cmd = "admixfrog-bam2 --bam data/oase_chr{CHROM}.bam "
+    cmd = "admixslug-bam --bam data/oase_chr{CHROM}.bam "
     cmd += " --ref data/ref_A1240k.csv.xz --out data/Oase.sfs.in.xz "
     cmd += " --chroms 9,X --force-bam"
     args = cmd.split()
