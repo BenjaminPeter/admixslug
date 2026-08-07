@@ -1,9 +1,11 @@
+import logging
+import lzma
+from collections import defaultdict
+
+import pandas as pd
+
 from . import pgdirect as pg
 from .vcf import parse_chroms
-import logging
-import pandas as pd
-from collections import defaultdict
-import lzma
 
 default_filter = {
     "deam_only": False,
@@ -24,11 +26,14 @@ class AdmixfrogInput2(pg.ExtCoverage):
         report_alleles=False,
         **kwargs,
     ):
+        super().__init__(outfile=outfile, deam_cutoff=deam_cutoff,
+                         length_bin_size=length_bin_size, **kwargs)
         self.outfile = outfile
         self.deam_cutoff = deam_cutoff
         self.length_bin_size = 1
         self.random_read_sample = random_read_sample
         self.report_alleles = report_alleles
+        self.f = None #input file handle
         if random_read_sample:
             raise NotImplementedError
         try:
@@ -54,7 +59,7 @@ class AdmixfrogInput2(pg.ExtCoverage):
 
     def process_snp(self, block, snp):
         reads = snp.reads(**self.kwargs)
-        D = defaultdict(lambda: self.Obs())
+        D = defaultdict(self.Obs())
         # n_ref, n_alt, n_deam, n_other = 0, 0, 0, 0
         for r in reads:
             DEAM = (
@@ -108,7 +113,7 @@ class RefIter:
         self.bed = self.ref
 
     def __iter__(self):
-        for ix, row in self.ref.iterrows():
+        for _, row in self.ref.iterrows():
             yield 0, (row.chrom, row.pos - 1, row.ref, row.alt)
 
 

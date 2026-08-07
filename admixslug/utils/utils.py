@@ -1,9 +1,8 @@
 import logging
-from collections import namedtuple, defaultdict, Counter
+from collections import defaultdict, namedtuple
+
 import numpy as np
 import pandas as pd
-import yaml
-
 from numba import njit
 from scipy.linalg import expm
 

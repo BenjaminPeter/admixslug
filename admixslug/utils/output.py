@@ -1,4 +1,3 @@
-import logging
 import yaml
 
 
@@ -14,7 +13,7 @@ def write_pars_table(pars, outname=None):
         for k, v in P.items():
             try:
                 P[k] = v.tolist()
-            except:
+            except ValueError:
                 pass
 
     except AttributeError:
@@ -23,7 +22,7 @@ def write_pars_table(pars, outname=None):
     s = yaml.dump(P, Dumper=IndentDumper, default_flow_style=False, indent=4)
 
     if outname is not None:
-        with open(outname, "wt") as f:
+        with open(outname, "wt", encoding="utf-8") as f:
             f.write(s)
 
     return s

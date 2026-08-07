@@ -1,11 +1,10 @@
-import logging
-import yaml
-from numba import njit
 from collections import Counter
+import itertools
+import logging
+from numba import njit
 from scipy.stats import binom
 import pandas as pd
 import numpy as np
-import itertools
 
 from .utils import parse_chroms
 
@@ -51,7 +50,6 @@ def load_ref(
 
     # which file a column is in
     file_ix = [None for i in data_cols]
-    map_ix = None
 
     # read headers of each ref
     headers = list(list(pd.read_csv(r, nrows=0).columns) for r in ref_files)
@@ -97,7 +95,7 @@ def load_ref(
     ref = ref.rename(D, axis=1).T.groupby(level=0).sum().T
 
     if autosomes_only:
-        if type(sex_chroms) is not list:
+        if isinstance(sex_chroms, list):
             sex_chroms = parse_chroms(sex_chroms)
         ref = ref[~ref.index.get_level_values("chrom").isin(sex_chroms)]
     return ref
@@ -112,8 +110,7 @@ def filter_ref(
     filter_pos=None,
     filter_map=None,
     filter_ancestral=False,
-    filter_cont=True,
-    **kwargs,
+    filter_cont=True
 ):
 
     if filter_ancestral and ancestral is not None:

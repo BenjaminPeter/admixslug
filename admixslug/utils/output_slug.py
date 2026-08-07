@@ -1,10 +1,10 @@
+import warnings
 from collections import defaultdict, Counter
 import pandas as pd
 import numpy as np
 
 from .utils import posterior_table_slug
 
-import warnings
 
 warnings.filterwarnings("error")
 
@@ -86,7 +86,7 @@ def write_vcf(df, data, posterior_gt, genotype_ll, sample_name="test", outname=N
     T = posterior_table_slug(pg=posterior_gt, data=data, gtll=genotype_ll)
     snp_df = pd.concat((D, T, pd.DataFrame(data.SNP2SFS, columns=["sfs"])), axis=1)
 
-    with open(outname, "wt") as f:
+    with open(outname, "wt", encoding="utf-8") as f:
         f.write(write_vcf_header())
         f.write(write_vcf_chroms(data.chroms))
         f.write("#CHROM	POS	ID	REF	ALT	QUAL	FILTER\tINFO\tFORMAT\t")

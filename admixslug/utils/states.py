@@ -42,7 +42,7 @@ class States(object):
 
     @classmethod
     def from_commandline(
-        cls, raw_states, state_file, ancestral, cont_id=None, *args, **kwargs
+        cls, raw_states, state_file, ancestral, *args, cont_id=None, **kwargs
     ):
 
         state_dict = cls.parse_state_string(
@@ -147,7 +147,6 @@ class States(object):
         return rename dict for reference
 
         """
-        ext2 = ["_ref", "_alt"]
         d1 = [s.split("=") for s in states if s is not None]
         d2 = [(s if len(s) > 1 else (s[0], s[0])) for s in d1]
         state_dict = dict(

@@ -26,12 +26,10 @@ class Pars(object):
 
     def __setattr__(self, name, value):
         """get attributes by names.
-        I use this function as a more readable (but slightly slower) version of previosu extended one.
+        I use this function as a more readable (but slightly slower) version of previos one.
         Key idea is that all parameters are stored in a flat numpy array for squarem/em
         """
-        if name == "par_names":
-            object.__setattr__(self, name, value)
-        elif name in self.par_names:
+        if name in self.par_names:
             self._pars[self.slices[name]] = value.flatten()
         elif name.startswith("prev_") and name != "prev_ll":
             self.prev[self.slices[name[5:]]] = value.flatten()
@@ -39,9 +37,7 @@ class Pars(object):
             object.__setattr__(self, name, value)
 
     def __getattr__(self, name):
-        if name == "par_names":
-            return super().__getattr__(name)
-        elif name in self.par_names:
+        if name in self.par_names:
             return self._pars[self.slices[name]].reshape(self.shapes[name])
         elif name.startswith("prev_") and name != "prev_ll":
             return self.prev[self.slices[name[5:]]].reshape(self.shapes[name[5:]])
