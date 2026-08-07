@@ -22,6 +22,7 @@ def test_jk(script_runner):
     print(ret.stderr)
     assert ret.success
 
+
 def test_jk_tau_only(script_runner):
     """test case 1"""
     cmd = "admixslug --infile data/oase_chr9_sfs.in.xz --ref data/ref_A1240k.csv.xz "
@@ -73,6 +74,7 @@ def test_binning(script_runner):
     print(ret.stderr)
     assert ret.success
 
+
 def test_gtmode(script_runner):
     cmd = "admixslug --infile data/chag_gt.csv.xz --ref data/ref_A1240k.csv.xz "
     cmd += " --out res/test_sfsgt --seed 13 --force-infile --states CHA  --gt-mode "
@@ -80,6 +82,7 @@ def test_gtmode(script_runner):
     print(args)
     ret = script_runner.run(args, cwd="tests")
     print(ret.stdout)
+
 
 def test_gtmode_tau_only(script_runner):
     cmd = "admixslug --infile data/chag_gt.csv.xz --ref data/ref_A1240k.csv.xz "

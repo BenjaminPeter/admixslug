@@ -7,7 +7,6 @@ from .sample import Population
 
 import pdb
 
-
 VCF_ROW = "{chrom}\t{pos}\t{chrom}_{pos}\t{ref}\t{alt}\t.\t.\t.\tGT"
 VCF_ROWDP = "{chrom}\t{pos}\t{chrom}_{pos}\t{ref}\t{alt}\t.\t.\t.\tGT:DP"
 

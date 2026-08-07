@@ -90,35 +90,3 @@ class SlugPars(Pars):
     @property
     def n_pars(self):
         return len(self._pars)
-
-
-class FrogPars(Pars):
-    """Parameters inferred by admixfrog"""
-
-    par_names = [
-        "alpha0",
-        "alpha0_hap",
-        "trans",
-        "trans_hap",
-        "cont",
-        "error",
-        "F",
-        "tau",
-    ]
-
-    class _H:
-        pass
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.H = self._H()
-        self.H.alpha0 = self.alpha0_hap
-        self.H.trans = self.trans_hap
-
-    @property
-    def n_states(self):
-        return len(self.F)
-
-    @property
-    def n_rgs(self):
-        return len(self.cont)

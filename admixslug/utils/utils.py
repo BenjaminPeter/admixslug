@@ -7,7 +7,6 @@ import yaml
 from numba import njit
 from scipy.linalg import expm
 
-
 Probs = namedtuple(
     "Probs", ("O", "N", "P_cont", "alpha", "beta", "rg", "alpha_hap", "beta_hap", "S")
 )
@@ -15,13 +14,6 @@ Pars = namedtuple(
     "Pars",
     ("alpha0", "alpha0_hap", "trans", "trans_hap", "cont", "error", "F", "tau", "sex"),
 )  # for returning from varios functions
-
-
-class _IX:
-    """class to be filled with various indices"""
-
-    def __init__(self):
-        pass
 
 
 def data2probs(
@@ -182,158 +174,6 @@ def data2probs(
         S=states,
     )
     return P
-
-
-def bins_from_bed(df, bin_size, sex=None, snp_mode=False, haplo_chroms=None):
-    """create a bunch of auxillary data frames for binning
-
-    - bins: columns are chrom_id, chrom, bin_pos, bin_id, map
-    - IX: container storing all indices, will need to be cleaned later on
-        currently contains:
-        - IX.SNP2BIN [n_snps]: array giving bin for each snp
-        - IX.OBS2SNP [n_obs]: array giving snp for each obs
-        - IX.OBS2BIN [n_obs]: array giving bin for each obs
-        - IX.bin_sizes [n_chroms]: number of bins per chromosome
-        - IX.RG2OBS [n_rgs] : [list] dict giving obs for each readgroup
-        - IX.rgs : names of all libraries
-    - haplo_chroms : chromosoms to be haploid
-    """
-    IX = _IX()
-    IX.rgs = pd.unique(df.rg)
-
-    obsix = df.index.to_frame(index=False)
-    snp = obsix.drop_duplicates()
-
-    chroms = pd.unique(snp.chrom)
-    n_snps = len(snp.snp_id.unique())
-
-    if haplo_chroms is not None:
-        haplo_chroms = parse_chroms(haplo_chroms)
-        haplo_chroms = [c for c in chroms if c in haplo_chroms]
-        diplo_chroms = [c for c in chroms if c not in haplo_chroms]
-    else:
-        haplo_chroms, diplo_chroms = [], []
-
-        if sex is None:
-            diplo_chroms = chroms
-        else:
-            for c in chroms:
-                if c[0] in "YyWw":
-                    haplo_chroms.append(c)
-                elif c[0] in "Xx" and sex == "m":
-                    haplo_chroms.append(c)
-                elif c[0] in "Zz" and sex == "f":
-                    haplo_chroms.append(c)
-                elif c.startswith("hap"):
-                    haplo_chroms.append(c)
-                else:
-                    diplo_chroms.append(c)
-
-    IX.SNP2BIN = np.empty((n_snps), int)
-    IX.OBS2SNP = obsix.snp_id.values
-
-    bin_loc = []
-    bin0 = 0
-    # chrom could start with "chr", e.g. hg38 based analysis
-    dtype_bin = np.dtype(
-        [("chrom", "U5"), ("map", float), ("pos", int), ("id", int), ("haploid", bool)]
-    )
-
-    IX.bin_sizes = []
-    IX.diploid_snps, IX.haploid_snps = [], []
-
-    for i, chrom in enumerate(chroms):
-        map_ = snp["map"][snp.chrom == chrom]
-        pos = snp["pos"][snp.chrom == chrom]
-
-        chrom_start = float(np.floor(map_.iloc[0] / bin_size) * bin_size)
-        chrom_end = float(np.ceil(map_.iloc[-1] / bin_size) * bin_size)
-        chrom_is_hap = chrom in haplo_chroms
-
-        if snp_mode:
-            bins = np.arange(bin0, bin0 + np.sum(snp.chrom == chrom))
-            logging.debug("binning chrom %s: %d snp bins", chrom, len(bins))
-
-            IX.bin_sizes.append(len(bins))
-            bin_ids = bins
-            _bin = np.empty_like(bins, dtype_bin)
-            _bin["chrom"] = chrom
-            _bin["pos"] = pos
-            _bin["id"] = bin_ids
-            _bin["map"] = bins
-            _bin["haploid"] = chrom_is_hap
-            bin_loc.append(_bin)
-
-            snp_ids = bins
-            IX.SNP2BIN[bins] = bins
-
-        else:
-            # create bins
-            bins = np.arange(chrom_start, chrom_end, bin_size)
-            logging.info("binning chrom %s: %d bins", chrom, len(bins))
-
-            IX.bin_sizes.append(len(bins))
-            bin_ids = range(bin0, bin0 + len(bins))
-            _bin = np.empty_like(bins, dtype_bin)
-            _bin["chrom"] = chrom
-            _bin["pos"] = np.interp(bins, map_, pos)
-            _bin["id"] = bin_ids
-            _bin["map"] = bins
-            _bin["haploid"] = chrom_is_hap
-            bin_loc.append(_bin)
-
-            # put SNPs in bins
-            snp_ids = snp.snp_id[snp.chrom == chrom]
-            dig_snp = np.digitize(snp[snp.chrom == chrom]["map"], bins, right=False) - 1
-            IX.SNP2BIN[snp_ids] = dig_snp + bin0
-
-        if chrom_is_hap:
-            IX.haploid_snps.extend(snp_ids)
-        else:
-            IX.diploid_snps.extend(snp_ids)
-
-        bin0 += len(bins)
-
-    bins = np.hstack(bin_loc)
-
-    # for now, assume data is ordered such that diploid chroms come before haploid ones
-    assert (
-        len(IX.haploid_snps) == 0
-        or len(IX.diploid_snps) == 0
-        or min(IX.haploid_snps) > max(IX.diploid_snps)
-    )
-
-    if len(IX.haploid_snps) > 0:
-        IX.haploid_snps = slice(min(IX.haploid_snps), max(IX.haploid_snps) + 1)
-    else:
-        IX.haploid_snps = slice(0, 0)
-    if len(IX.diploid_snps) > 0:
-        IX.diploid_snps = slice(min(IX.diploid_snps), max(IX.diploid_snps) + 1)
-    else:
-        IX.diploid_snps = slice(0, 0)
-
-    # IX.RG2OBS = dict((l, np.where(df.rg == l)[0]) for l in IX.rgs)
-    # much more efficient
-    IX.RG2OBS = defaultdict(list)
-    for i, rg in enumerate(df.rg):
-        IX.RG2OBS[rg].append(i)
-    for k in IX.RG2OBS:
-        IX.RG2OBS[k] = np.array(IX.RG2OBS[k])
-
-    IX.OBS2BIN = IX.SNP2BIN[IX.OBS2SNP]
-
-    IX.n_chroms = len(chroms)
-    IX.n_bins = len(bins)
-    IX.n_snps = len(IX.SNP2BIN)
-    IX.n_obs = len(IX.OBS2SNP)
-    IX.n_reads = np.sum(df.tref + df.talt)
-
-    IX.chroms = chroms
-    IX.haplo_chroms = haplo_chroms
-    IX.diplo_chroms = diplo_chroms
-
-    logging.debug("done creating bins")
-    return bins, IX
 
 
 def get_haploid_stuff(snp, chroms, sex):
@@ -582,18 +422,6 @@ def init_pars(
     )
 
 
-def posterior_table(pg, Z, IX, est_inbreeding=False):
-    freq = np.array([0, 1, 2, 0, 1]) if est_inbreeding else np.arange(3)
-    PG = np.sum(Z[IX.SNP2BIN][:, :, np.newaxis] * pg, 1)  # genotype probs
-    mu = np.sum(PG * freq, 1)[:, np.newaxis] / 2
-    random = np.random.binomial(1, np.clip(mu, 0, 1))
-    PG = np.log10(PG + 1e-40)
-    PG = np.minimum(0.0, PG)
-    return pd.DataFrame(
-        np.hstack((PG, mu, random)), columns=["G0", "G1", "G2", "p", "random_read"]
-    )
-
-
 def posterior_table_slug(pg, data, gtll=None):
     mu = np.sum(pg * np.arange(3) / 2.0, 1)
     random = np.random.binomial(1, np.clip(mu, 0, 1))
@@ -607,26 +435,6 @@ def posterior_table_slug(pg, data, gtll=None):
         df_ll = pd.DataFrame(log_ll, columns=["L0", "L1", "L2"])
         df = pd.concat((df, df_ll), axis=1)
     return df
-
-
-def empirical_bayes_prior(der, anc, known_anc=False):
-    """using beta-binomial plug-in estimator"""
-
-    n = anc + der
-    f = np.nanmean(der / n) if known_anc else 0.5
-
-    H = f * (1.0 - f)  # alt formulation
-    if H == 0.0:
-        return 1e-6, 1e-6
-
-    V = np.nanvar(der / n) if known_anc else np.nanvar(np.hstack((der / n, anc / n)))
-
-    ab = (H - V) / (V - H / np.nanmean(n))
-    if np.nanmean(n) < ab:
-        return 1e-6, 1e-6
-    pa = max((f * ab, 1e-5))
-    pb = max(((1 - f) * ab, 1e-5))
-    return pa, pb
 
 
 def guess_sex(ref, data, sex_ratio_threshold=0.75):
@@ -663,35 +471,6 @@ def guess_sex(ref, data, sex_ratio_threshold=0.75):
             "guessing sex is female, X/A = %.4f/%.4f" % (cov[True], cov[False])
         )
     return sex
-
-
-def scale_mat(M):
-    """scale a matrix of probabilities such that it's highest value is one
-
-    modifies M and returns log(scaling)
-    """
-    scaling = np.max(M, 1)[:, np.newaxis]
-    M /= scaling
-    assert np.allclose(np.max(M, 1), 1)
-    log_scaling = np.sum(np.log(scaling))
-    return log_scaling
-
-
-def scale_mat3d(M):
-    """scale a matrix of probabilities such that it's highest value is one
-
-    modifies M and returns log(scaling)
-    """
-    scaling = np.max(M, (1, 2))[:, np.newaxis, np.newaxis]
-
-    # zeros = np.isclose(scaling, 0)[:, 0, 0]
-    M /= scaling
-    # M[zeros] = 1
-    # scaling[zeros] = 1
-
-    assert np.allclose(np.max(M, (1, 2)), 1)
-    log_scaling = np.sum(np.log(scaling))
-    return log_scaling
 
 
 def parse_chroms(arg):

@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 import itertools
 
-from .utils import posterior_table, posterior_table_slug, parse_chroms
+from .utils import parse_chroms
 
 
 def load_ref(
@@ -209,10 +209,10 @@ def bin_reads(data, deam_bin_size=10000, len_bin_size=1000, short_threshold=2):
     data.reset_index(inplace=True)
     data["n"] = data["tref"] + data["talt"]
 
-    if 'deam' not in data.columns:
-        data['deam'] = 0
-    if 'len' not in data.columns:
-        data['len'] = 0
+    if "deam" not in data.columns:
+        data["deam"] = 0
+    if "len" not in data.columns:
+        data["len"] = 0
 
     data["deam_bin"] = data.groupby(["lib"], group_keys=False).deam.apply(
         qbin, bin_size=deam_bin_size, short_threshold=short_threshold

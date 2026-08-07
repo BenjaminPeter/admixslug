@@ -1,5 +1,5 @@
-"""basic command line interfaces
-"""
+"""basic command line interfaces"""
+
 import admixslug
 import argparse
 import os
@@ -9,7 +9,7 @@ import logging
 from os.path import isfile
 
 from .slug import run_admixslug
-from .utils.bam import process_bam, process_bam2
+from .utils.bam import process_bam2
 from .utils.vcf import (
     load_pop_file,
     vcf_to_ref,
@@ -17,14 +17,13 @@ from .utils.vcf import (
     vcf_to_sample,
 )
 from .utils.log import setup_log
-from .options import INFILE_OPTIONS, REFFILE_OPTIONS, GENO_OPTIONS
+from .options import INFILE_OPTIONS, REFFILE_OPTIONS
 from .options import ALGORITHM_OPTIONS_SLUG
-from .options import add_target_file_options, add_rle_options
+from .options import add_target_file_options
 from .options import add_filter_options
 from .options import add_ref_options
 from .options import add_pop_options, add_base_options_slug
 from .options import add_output_options_slug, add_estimation_options_slug
-
 
 
 def run_sfs():
@@ -69,7 +68,6 @@ def run_sfs():
                         these are used later in --cont-id and --state-id flags
                         """,
     )
-
 
     parser.add_argument(
         "--seed", help="random number generator seed for resampling", default=None
@@ -125,8 +123,6 @@ def run_sfs():
             reffile_pars[k] = V.pop(k)
         elif k in ALGORITHM_OPTIONS_SLUG:
             algo_pars[k] = V.pop(k)
-        elif k in GENO_OPTIONS:
-            geno_pars[k] = V.pop(k)
 
     del V["random_read_samples"]
 
@@ -137,7 +133,6 @@ def run_sfs():
     V["init"] = init_pars
 
     # V["algorithm"] = algo_pars
-    # V["geno"] = geno_pars
     # V['ref'] = reffile_pars
     setup_log(filename=f"{args.outname}.log")
 
@@ -161,10 +156,8 @@ def run_sfs():
             )
             V["ref_files"] = [V["outname"] + ".ref.xz"]
             if isfile(V["ref_files"][0]) and not reffile_pars["force_ref"]:
-                raise ValueError(
-                    """ref-file exists. Use this or set --force-ref to 
-                    regenerate the file"""
-                )
+                raise ValueError("""ref-file exists. Use this or set --force-ref to 
+                    regenerate the file""")
             logging.info("creating ref from vcf file")
 
             pop2sample = load_pop_file(reffile_pars["state_file"], V["states"])
@@ -236,8 +229,10 @@ def run_sfs():
                 "no sample defined (set either --target-file --bam --vcfgt or --gfile must be set"
             )
 
-    if target_pars['target'] is None:
-        target_pars['target'] = os.path.basename(target_pars['target_file']).split("_")[0]
+    if target_pars["target"] is None:
+        target_pars["target"] = os.path.basename(target_pars["target_file"]).split("_")[
+            0
+        ]
 
     from . import __version__
 

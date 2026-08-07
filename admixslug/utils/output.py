@@ -1,13 +1,5 @@
 import logging
 import yaml
-from numba import njit
-from collections import Counter
-from scipy.stats import binom
-import pandas as pd
-import numpy as np
-import itertools
-
-from .utils import posterior_table, posterior_table_slug
 
 
 # yaml writer with indent

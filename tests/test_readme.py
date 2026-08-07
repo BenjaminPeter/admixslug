@@ -1,5 +1,4 @@
-
-#def test_quickstart(script_runner):
+# def test_quickstart(script_runner):
 #    cmd = "admixfrog --gfile data/oase --target Oase1_d --states NEA=Vindija.DG+Altai.DG YRI=Yoruba.DG  Denisova.DG  --cont YRI"
 #    args = cmd.split()
 #    ret = script_runner.run(args, cwd="tests")

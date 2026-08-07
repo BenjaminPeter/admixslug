@@ -12,7 +12,6 @@ from ..utils.output_slug import write_sfs2, write_vcf, write_sfs2_gt
 from ..utils.output_slug import write_f3_table, write_f4_table, write_f2_table
 from ..utils.utils import guess_sex
 from ..utils.states import States
-from ..utils.geno_io import read_geno_ref, read_geno
 from .classes import SlugController, SlugReads, SlugPars
 from .em import em, squarem, squarem_gt
 from .emissions import full_posterior_genotypes, full_posterior_genotypes_gt

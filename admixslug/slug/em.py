@@ -100,7 +100,6 @@ def update_tau_only(old_tau, data, post_g):
     tau = np.zeros(data.n_sfs)
     tau[:] = old_tau
 
-
     log_.debug(f"updating tau only ")
 
     for k in range(data.n_sfs):
@@ -233,9 +232,7 @@ def update_pars(pars, data, controller):
     elif O.update_ftau and not O.update_F:
         post_g = posterior_g(bwd_g, fwd_g)
         pars.prev_tau[:] = pars.tau
-        pars.tau = update_tau_only(
-            pars.tau, data, post_g
-        )
+        pars.tau = update_tau_only(pars.tau, data, post_g)
 
     if O.update_cont:
         post_c = posterior_c(bwd_x, fwd_x_nocont, fwd_x_cont, fwd_c, data.READ2RG)
@@ -291,9 +288,7 @@ def update_pars_gt(pars, data, controller):
     elif O.update_ftau and not O.update_F:
         post_g = posterior_g(bwd_g, fwd_g)
         pars.prev_tau[:] = pars.tau
-        pars.tau = update_tau_only(
-            pars.tau, data, post_g
-        )
+        pars.tau = update_tau_only(pars.tau, data, post_g)
 
     if O.update_eb:
         pars.prev_e, pars.prev_b = pars.e, pars.b
