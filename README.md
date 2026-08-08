@@ -170,8 +170,11 @@ Changes are that `admixslug --help` will give more up-to-date information.
 
 
 ## Contact
-Benjamin Peter [benjamin_peter@eva.mpg.de](benjamin_peter@eva.mpg.de)
+Benjamin Peter [benjamin_peter@eva.mpg.de](benjamin_peter@eva.mpg.de), 
 Arev Sümer [arev_suemer@eva.mpg.de](arev_suemer@eva.mpg.de)
+
+## License
+This project is covered under the BSD 3-Clause License.
 
 
 Full command and parameters can be found here:
