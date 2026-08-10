@@ -56,20 +56,19 @@ and saving the output files in `outputs/FQ_bigsteffi52`
 ```
 admixslug --infile tests/data/FQ_bigsteffi52.in.xz \
         --ref tests/data/ref_bigsteffi.csv.xz \
-        -o outputs/FQ_bigsteffi52  
-        --states ALT VIN CHA DEN  
-        --cont-id EUR  
-        --ancestral PAN  
-        --ll-tol 0.01  
-        --ptol 0.001   
-        --max-iter 100
-        --filter-pos 50
-        --filter-ancestral  
-        --len-bin-size 2000
-        --jk-resamples 10
-        --output-jk-sfs
+        -o outputs/FQ_bigsteffi52  \
+        --states ALT VIN CHA DEN  \
+        --cont-id EUR  \
+        --ancestral PAN \
+        --ll-tol 0.01  \
+        --ptol 0.001   \
+        --max-iter 100 \
+        --filter-pos 50 \
+        --filter-ancestral  \
+        --len-bin-size 2000\
+        --jk-resamples 10\
+        --output-jk-sfs\
         --output-fstats
-
 ```
 
 On a desktop computer, this should take a little over 1 minute.
