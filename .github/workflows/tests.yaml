@@ -45,6 +45,15 @@ jobs:
           path: .venv
           key: venv-${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
 
+      - name: Pre-seed setuptools/wheel into the Poetry venv
+        # Needed because pybedtools has a legacy setup.py that does
+        # `import setuptools` directly. Python 3.12's venv module no
+        # longer bundles setuptools/wheel by default, so without this
+        # step the build fails with "setuptools was not found".
+        run: |
+          poetry env use python${{ matrix.python-version }}
+          poetry run pip install --upgrade pip setuptools wheel
+
       - name: Install package and dev dependencies
         run: poetry install --with dev --no-interaction
 
