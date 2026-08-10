@@ -56,20 +56,19 @@ and saving the output files in `outputs/FQ_bigsteffi52`
 ```
 admixslug --infile tests/data/FQ_bigsteffi52.in.xz \
         --ref tests/data/ref_bigsteffi.csv.xz \
-        -o outputs/FQ_bigsteffi52  
-        --states ALT VIN CHA DEN  
-        --cont-id EUR  
-        --ancestral PAN  
-        --ll-tol 0.01  
-        --ptol 0.001   
-        --max-iter 100
-        --filter-pos 50
-        --filter-ancestral  
-        --len-bin-size 2000
-        --jk-resamples 10
-        --output-jk-sfs
+        -o outputs/FQ_bigsteffi52  \
+        --states ALT VIN CHA DEN  \
+        --cont-id EUR  \
+        --ancestral PAN \
+        --ll-tol 0.01  \
+        --ptol 0.001   \
+        --max-iter 100 \
+        --filter-pos 50 \
+        --filter-ancestral  \
+        --len-bin-size 2000\
+        --jk-resamples 10\
+        --output-jk-sfs\
         --output-fstats
-
 ```
 
 On a desktop computer, this should take a little over 1 minute.
@@ -163,12 +162,6 @@ Admixslug outputs additional files named {out}.f2.jk.xz, {out}.f3.jk.xz and
 is calculated for, type of data (autosomal vs. sex chromosome) and the value of
 the statistic for each JK resample.
 
-## Documentation
-Full documentation is available in the supplementary information of our manuscript which will be soon on bioarxiv.
-Some less up to date files can be found currently in [docs/admixslug.pdf](docs/admixslug.pdf).
-Changes are that `admixslug --help` will give more up-to-date information.
-
-
 ## Contact
 Benjamin Peter [benjamin_peter@eva.mpg.de](benjamin_peter@eva.mpg.de), 
 Arev Sümer [arev_suemer@eva.mpg.de](arev_suemer@eva.mpg.de)
@@ -177,7 +170,12 @@ Arev Sümer [arev_suemer@eva.mpg.de](arev_suemer@eva.mpg.de)
 This project is covered under the BSD 3-Clause License.
 
 
-Full command and parameters can be found here:
+## Documentation
+Full description of the algorithm is available in the supplementary information of our manuscript which will be soon on bioarxiv.
+Some less up to date files can be found currently in [docs/admixslug.pdf](docs/admixslug.pdf).
+Changes are that `admixslug --help` will give more up-to-date information.
+
+Full command and parameters can be found by typing `admixslug --help`:
 ```
 usage: admixslug [-h] [-v] [--target-file TARGET_FILE] [--ref REF_FILES] [--seed SEED]                
                  [--sex-chroms SEX_CHROMS] [--bamfile BAMFILE] [--force-target-file]                  
