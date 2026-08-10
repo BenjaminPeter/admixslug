@@ -1,5 +1,8 @@
 # Admixslug
 
+[![Tests](https://github.com/BenjaminPeter/admixslug/actions/workflows/tests.yaml/badge.svg)](https://github.com/BenjaminPeter/admixslug/actions/workflows/tests.yaml)
+
+
 Admixslug is a genotype likelihood method for contaminated low-coverage nuclear DNA data from
 archaic humans. It works by computing a conditional site-frequency spectrum. Outputs of admixslug include contamination estimates and f-statistics.
 
