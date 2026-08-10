@@ -33,7 +33,7 @@ jobs:
           sudo apt-get install -y bedtools
 
       - name: Install Poetry
-        uses: actions/setup-poetry@v9
+        uses: Gr1N/setup-poetry@v8
         with:
           version: latest
           virtualenvs-create: true
