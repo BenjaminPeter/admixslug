@@ -59,7 +59,7 @@ class AdmixfrogInput2(pg.ExtCoverage):
 
     def process_snp(self, block, snp):
         reads = snp.reads(**self.kwargs)
-        D = defaultdict(self.Obs())
+        D = defaultdict(lambda : self.Obs())
         # n_ref, n_alt, n_deam, n_other = 0, 0, 0, 0
         for r in reads:
             DEAM = (
