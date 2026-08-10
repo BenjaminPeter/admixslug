@@ -162,12 +162,6 @@ Admixslug outputs additional files named {out}.f2.jk.xz, {out}.f3.jk.xz and
 is calculated for, type of data (autosomal vs. sex chromosome) and the value of
 the statistic for each JK resample.
 
-## Documentation
-Full documentation is available in the supplementary information of our manuscript which will be soon on bioarxiv.
-Some less up to date files can be found currently in [docs/admixslug.pdf](docs/admixslug.pdf).
-Changes are that `admixslug --help` will give more up-to-date information.
-
-
 ## Contact
 Benjamin Peter [benjamin_peter@eva.mpg.de](benjamin_peter@eva.mpg.de), 
 Arev Sümer [arev_suemer@eva.mpg.de](arev_suemer@eva.mpg.de)
@@ -176,7 +170,12 @@ Arev Sümer [arev_suemer@eva.mpg.de](arev_suemer@eva.mpg.de)
 This project is covered under the BSD 3-Clause License.
 
 
-Full command and parameters can be found here:
+## Documentation
+Full description of the algorithm is available in the supplementary information of our manuscript which will be soon on bioarxiv.
+Some less up to date files can be found currently in [docs/admixslug.pdf](docs/admixslug.pdf).
+Changes are that `admixslug --help` will give more up-to-date information.
+
+Full command and parameters can be found by typing `admixslug --help`:
 ```
 usage: admixslug [-h] [-v] [--target-file TARGET_FILE] [--ref REF_FILES] [--seed SEED]                
                  [--sex-chroms SEX_CHROMS] [--bamfile BAMFILE] [--force-target-file]                  
