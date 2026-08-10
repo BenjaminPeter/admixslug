@@ -1,5 +1,5 @@
 def test_quickstart_bam(script_runner):
-    cmd = "admixslug-bam --bam tests/data/FQ.L30MQ25_bigsteffi52.bam --out outputs/FQ_bigsteffi52.in.xz  --ref tests/data/ref_bigsteffi.csv.xz"
+    cmd = "admixslug-bam --bam tests/data/FQ.L30MQ25_bigsteffi52.bam --out tests/res/FQ_bigsteffi52.in.xz  --ref tests/data/ref_bigsteffi.csv.xz"
     args = cmd.split()
     ret = script_runner.run(args, cwd="./")
     assert ret.success
@@ -7,7 +7,7 @@ def test_quickstart_bam(script_runner):
 def test_quickstart_slug(script_runner):
     cmd = """admixslug --infile tests/data/FQ_bigsteffi52.in.xz 
         --ref tests/data/ref_bigsteffi.csv.xz 
-        -o outputs/FQ_bigsteffi52  
+        -o tests/res/FQ_bigsteffi52  
         --states ALT VIN CHA DEN  
         --cont-id EUR  
         --ancestral PAN 
