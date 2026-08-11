@@ -16,11 +16,7 @@ The package development version is tested on Linux operating systems. The initia
 All package and version dependencies are listed in pyproject.toml and poetry.lock, and automatically installed with admixslug.
 
 ## Installation
-Requires `python3.8+`
-Install dependencies:
-```
-pip install cython scipy --upgrade
-```
+Requires `python3.10+`
 
 You can create a conda environment using the .yml file provided (admixslug_env.yml).
 
@@ -30,7 +26,12 @@ conda activate admixslug_env
 ```
 This should take about 3-4 minutes on a desktop computer.
 
-Install `admixslug` (from github):
+Install latest release of `admixslug` (from pypi):
+```
+pip install admixslug
+```
+
+Or install the latest development version from github (potentially unstable):
 ```
 pip install git+https://github.com/benjaminpeter/admixslug
 ```
