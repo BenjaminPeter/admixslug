@@ -18,11 +18,6 @@ jobs:
         with:
           fetch-depth: 0
     
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v7
-        with:
-          python-version: ${{ matrix.python-version }}
-
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
@@ -44,7 +39,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: .venv
-          key: venv-${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
+          key: venv-${{ runner.os }}-py3.14-${{ hashFiles('poetry.lock') }}
 
       - name: Build package
         run: poetry build
