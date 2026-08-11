@@ -1,6 +1,8 @@
 # Admixslug
 
 [![Tests](https://github.com/BenjaminPeter/admixslug/actions/workflows/tests.yaml/badge.svg)](https://github.com/BenjaminPeter/admixslug/actions/workflows/tests.yaml)
+![PyPI Wheel](https://img.shields.io/pypi/wheel/admixslug?label=pypi)
+
 
 
 Admixslug is a genotype likelihood method for contaminated low-coverage nuclear DNA data from
