@@ -1,12 +1,13 @@
 import logging
-from collections import Counter
-import numpy as np
 import lzma
-from pysam import VariantFile
-from collections import defaultdict
+from collections import Counter, defaultdict
+from pprint import pprint
+
+import numpy as np
 import pandas as pd
 import yaml
-from pprint import pprint, pformat
+from pysam import VariantFile
+
 from .utils import parse_chroms
 
 EXT = "ref", "alt"
@@ -98,6 +99,8 @@ def vcf_to_ref(
         ref.write("\n")
         for chrom in chroms:
 
+            R0, R1 = None, None
+
             # set up rec file
             if rec_file is not None:
                 rec = pd.read_csv(rec_file.format(CHROM=chrom), sep=" ")
@@ -115,7 +118,7 @@ def vcf_to_ref(
             # skip chrom if empty
             with VariantFile(vcf_file.format(CHROM=chrom)) as vcf:
                 try:
-                    V = next(vcf)
+                    next(vcf)
                 except StopIteration:
                     continue
             with VariantFile(vcf_file.format(CHROM=chrom)) as vcf:
@@ -216,7 +219,7 @@ def vcf_to_sample(
     ref = pd.read_csv(ref_file, dtype={"chrom": "str"})
 
     with lzma.open(outfile, "wt") as infile:
-        infile.write(f"chrom,pos,tref,talt\n")
+        infile.write("chrom,pos,tref,talt\n")
 
         for chrom in chroms:
 
