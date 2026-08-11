@@ -2,7 +2,6 @@ import logging
 import argparse
 from os.path import isfile
 from pprint import pformat
-import numpy as np
 
 from .utils.log import setup_log
 from .utils.bam import process_bam2

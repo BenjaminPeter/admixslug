@@ -56,7 +56,7 @@ def polarize(snp, pop, flipped):
     return sfs
 
 
-def obs2sfs(snp, flipped, states, sex_chroms=["Z", "W", "X", "Y"]):
+def obs2sfs(snp, flipped, states, max_states=None, sex_chroms=["Z", "W", "X", "Y"]):
     """create sfs data structure taking ancestral allele into account
 
     basic strat
