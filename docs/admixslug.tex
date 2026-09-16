@@ -246,9 +246,9 @@ For example, $n_{1,1,1} = Pr(X_{lrj}=1|O_{lrj}=1, W_l=1)$, i.e. a case where the
 
 \subsubsection*{Estimating $c_k$}
 \begin{align*}
-c_r =  \sum_{li} P(C_{lri}| O_{lrj})
+c_r =  \frac{1}{n_r}\sum_{li} P(C_{lri}| O_{lrj})
 \end{align*},
-i.e. we average over the posterior contamination estimates from all reads in the read group
+where $n_r$ is the number of reads in read group $r$, i.e. we average over the posterior contamination estimates from all reads in the read group
 \subsubsection*{Estimating $\tau_k$ and $F_k$}
 Done numerically by optimizing
 \begin{align*}
@@ -261,15 +261,15 @@ where $I$ is an indicator function, $P(G=g | \tau_k', F_k')$ are the estimates f
 \subsection*{Calculating F-statistics}
 We can calculate \emph{some} $F$-statistics directly from the \texttt{admixslug} output. We use the estimates based on pairwise differences \citep{peter2016}:
 \begin{align}
-F_2(X, Y) &= 2\pi_{xy} -\pi_{xx} - \pi_{yy}\\
-F_3(X; Y, Z) &= \pi_{xy} +\pi_{xz} - \pi_{yz} - \pi_{xx}\\
-F_4(X, Y; Z, W) &= \pi_{xz} +\pi_{yw} - \pi_{xw} - \pi_{yz}.
+F_2(X, Y) &= \pi_{xy} -\frac{\pi_{xx}}{2} - \frac{\pi_{yy}}{2}\\
+F_3(X; Y, Z) &= \frac{1}{2}\left(\pi_{xy} +\pi_{xz} - \pi_{yz} - \pi_{xx}\right)\\
+F_4(X, Y; Z, W) &= \frac{1}{2}\left(\pi_{xw} +\pi_{yz} - \pi_{xz} - \pi_{yw}\right).
 \end{align}
-Assume we have $L$ loci, and population $a_{il}, d_{il}$ are the ancestral/derived counts in population $i$ at locus $l$, respectively, such that $n_{il} = a_{il} + d_{il}$. Then
+Assume we have $L$ loci, and population $a_{il}, d_{il}$ are the ancestral/derived counts in population $i$ at locus $l$, respectively, such that $n_{il} = a_{il} + d_{il}$. Then, using the convention that $\pi_{ii}$ is (a sample-size corrected estimate of) the heterozygosity $2p_i(1-p_i)$, rather than half of it,
 \begin{equation}
 \pi_{ij} = \begin{cases}
 \frac{1}{L}\sum_l \frac{a_{il}d_{jl} + d_{il}a_{jl}} {n_{il}n_{jl}} ,& \text{if } i \neq j\\
-\frac{1}{L}\sum_l \frac{a_{il}d_{il}}{n_{il}(n_{il} -1)},              & \text{if }i =j
+\frac{1}{L}\sum_l \frac{2\, a_{il}d_{il}}{n_{il}(n_{il} -1)},              & \text{if }i =j
 \end{cases}
 \end{equation}
 
@@ -277,7 +277,7 @@ using the conditonal SFS from \texttt{admixslug}, we can write equivalently
 \begin{equation}
 \pi_{ij} = \begin{cases}
 \sum_k s_k \frac{a_{ik}d_{jk} + d_{ik}a_{jk}} {n_{ik}n_{jk}} ,& \text{if } i \neq j\\
-\sum_k s_k \frac{a_{ik}d_{ik}}{n_{ik}(n_{ik} -1)},              & \text{if }i =j
+\sum_k s_k \frac{2\, a_{ik}d_{ik}}{n_{ik}(n_{ik} -1)},              & \text{if }i =j
 \end{cases},
 \end{equation}
 where $a_{ik}, d_{ik}, n_{ik}$ are now the counts of ancestral/derived/total alleles in population $i$ and SFS-category $k$, and $s_k$ is the (estimated) proportion of SNPs of this category.
