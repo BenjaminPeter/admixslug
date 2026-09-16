@@ -78,14 +78,22 @@ def update_ftau_numeric(old_F, old_tau, data, post_g, update_F=True):
     return F, tau
 
 
-def update_tau_only(old_tau, data, post_g):
-    """updates the SFS parameters
+def update_tau_only(old_F, old_tau, data, post_g):
+    """updates the SFS parameters, holding F fixed
 
     tau represents the conditional SFS entry, i.e. what proportion of sites are
     derived in any particular SFS category
 
+    Note: the maximizer of the Q-function only has the simple closed form
+    (G1/2 + G2) / (G0 + G1 + G2) when F == 0. Since F is held fixed here (and
+    may be nonzero, e.g. when passed in via --F0 together with --dont-est-F),
+    we solve for the maximizer numerically instead, exactly as
+    update_ftau_numeric does when F is estimated jointly with tau.
+
     Parameters
     ----------
+    old_F : array[S x 1]
+        F, held fixed
     old_tau : array[S x 1]
         old tau
     data : SlugData
@@ -104,12 +112,35 @@ def update_tau_only(old_tau, data, post_g):
 
     for k in range(data.n_sfs):
         G0, G1, G2 = np.sum(post_g[data.SNP2SFS == k], 0)
+        F_ = old_F[k]
 
-        # update tau
-        if G0 + G1 + G2 > 0:
-            tau[k] = (G1 / 2.0 + G2) / (G0 + G1 + G2)
-        else:
+        if G0 + G1 + G2 == 0:
             tau[k] = 0.0
+            continue
+
+        if F_ == 0:
+            # closed form is exact for F=0, and avoids the optimizer for the
+            # (by far) most common case
+            tau[k] = (G1 / 2.0 + G2) / (G0 + G1 + G2)
+            continue
+
+        def f(args):
+            (tau_,) = args
+            c0 = F_ * (1 - tau_) + (1 - F_) * (1 - tau_) ** 2
+            c1 = (1 - F_) * 2 * tau_ * (1 - tau_)
+            c2 = F_ * tau_ + (1 - F_) * tau_ * tau_
+            x = np.log(c0) * G0 + np.log(c1) * G1 + np.log(c2) * G2
+            if np.isnan(x):
+                raise ValueError("nan in likelihood")
+            return -x
+
+        init = (tau[k],)
+        bounds = [(1e-10, 1 - 1e-10)]
+        OO = minimize(f, init, bounds=bounds, method="L-BFGS-B")
+        if not OO.success:
+            log_.debug(f"error optimizing tau={OO.x[0]}, for k={k}, F={F_}")
+
+        tau[k] = OO.x[0]
 
     return tau
 
@@ -136,30 +167,69 @@ def update_eb_gt(post_g, R, F, two_errors=True):
     """
     post_g : Pr(G_i = j |.)
     i.e. each row of post_g gives the prob that G is anc, het, der, respectively
+
+    Jointly maximizes the Q-function for e (and b, if two_errors) under the
+    emission model in bwd_p_o_given_g_gt. Unlike update_eb (which works on
+    single reads, where every cell is governed by e or b alone), the
+    correctly-called-het cell (R=1, G=1) here has probability 1 - b - e, a
+    term in *both* parameters jointly, so a simple ratio-of-counts M-step is
+    not exact for it; it is only a maximizer for the e==b case, which happens
+    to have a closed form (see below). In general we solve for the
+    maximizer numerically instead.
     """
-    # have error if i) not flipped , R==1, X=0 or ii) if flipped, R==1, X==1
-    errors = 0
-    errors += np.sum(post_g[(R != 0) & ~F, 0])  # case 2 and 3
-    # errors += np.sum(post_g[(R == 2), 1])      #case 6 and 15
-    errors += np.sum(post_g[(R != 0) & F, 2])  # case 17 and 18
+    R = np.asarray(R)
+    F = np.asarray(F, dtype=bool)
 
-    bias = 0.0
-    # bias += np.sum(post_g[(R == 0), 1])      #case 4 and 13
-    bias += np.sum(post_g[(R != 2) & ~F, 2])  # case 7 and 8
-    bias += np.sum(post_g[(R != 2) & F, 0])  # case 10 and 11
+    # weight of the "no error" cells, prob = 1 - 2e: (R=0,G=0,~F), (R=0,G=2,F)
+    w_no_error = np.sum(post_g[(R == 0) & ~F, 0]) + np.sum(post_g[(R == 0) & F, 2])
+    # weight of the "no bias" cells, prob = 1 - 2b: (R=2,G=2,~F), (R=2,G=0,F)
+    w_no_bias = np.sum(post_g[(R == 2) & ~F, 2]) + np.sum(post_g[(R == 2) & F, 0])
+    # weight of the correctly-called het cells, prob = 1 - b - e: (R=1,G=1,*)
+    w_correct_het = np.sum(post_g[R == 1, 1])
+    # weight of the "error" cells, prob = e
+    w_error = (
+        np.sum(post_g[(R == 1) & ~F, 0])
+        + np.sum(post_g[(R == 2) & ~F, 0])
+        + np.sum(post_g[(R == 2) & ~F, 1])
+        + np.sum(post_g[(R == 2) & F, 1])
+        + np.sum(post_g[(R == 1) & F, 2])
+        + np.sum(post_g[(R == 2) & F, 2])
+    )
+    # weight of the "bias" cells, prob = b
+    w_bias = (
+        np.sum(post_g[(R == 0) & ~F, 1])
+        + np.sum(post_g[(R == 0) & ~F, 2])
+        + np.sum(post_g[(R == 1) & ~F, 2])
+        + np.sum(post_g[(R == 0) & F, 0])
+        + np.sum(post_g[(R == 1) & F, 0])
+        + np.sum(post_g[(R == 0) & F, 1])
+    )
 
-    not_errors = np.sum(post_g[(R == 0) & ~F, 0])  # case 1
-    not_errors += np.sum(post_g[(R == 0) & F, 2])  # case 16
-
-    not_bias = np.sum(post_g[(R == 2) & ~F, 2])  # case 9
-    not_bias += np.sum(post_g[(R == 2) & F, 0])  # case 12
+    total = w_no_error + w_no_bias + w_correct_het + w_error + w_bias
+    if total == 0:
+        return 0.0, 0.0
 
     if two_errors:
-        e = errors / (errors + not_errors) if errors + not_errors > 0 else 0
-        b = bias / (bias + not_bias) if bias + not_bias > 0 else 0
+        def f(args):
+            e_, b_ = args
+            x = w_no_error * np.log(1 - 2 * e_) + w_no_bias * np.log(1 - 2 * b_)
+            x += w_correct_het * np.log(1 - b_ - e_)
+            x += w_error * np.log(e_) + w_bias * np.log(b_)
+            if np.isnan(x):
+                raise ValueError("nan in likelihood")
+            return -x
+
+        init = (0.01, 0.01)
+        bounds = [(1e-10, 0.5 - 1e-10), (1e-10, 0.5 - 1e-10)]
+        OO = minimize(f, init, bounds=bounds, method="L-BFGS-B")
+        if not OO.success:
+            log_.debug(f"error optimizing e={OO.x[0]}, b={OO.x[1]} in gt mode")
+        e, b = OO.x
     else:
-        e = (errors + bias) / (errors + bias + not_errors + not_bias)
-        b = e
+        # with e == b, "1 - b - e" reduces to "1 - 2e" too, so the Q-function
+        # is (w_no_error+w_no_bias+w_correct_het) log(1-2e) + (w_error+w_bias) log(e),
+        # which has a closed-form maximizer
+        e = b = (w_error + w_bias) / (2 * total)
 
     return e, b
 
@@ -232,7 +302,7 @@ def update_pars(pars, data, controller):
     elif O.update_ftau and not O.update_F:
         post_g = posterior_g(bwd_g, fwd_g)
         pars.prev_tau[:] = pars.tau
-        pars.tau = update_tau_only(pars.tau, data, post_g)
+        pars.tau = update_tau_only(pars.F, pars.tau, data, post_g)
 
     if O.update_cont:
         post_c = posterior_c(bwd_x, fwd_x_nocont, fwd_x_cont, fwd_c, data.READ2RG)
@@ -288,7 +358,7 @@ def update_pars_gt(pars, data, controller):
     elif O.update_ftau and not O.update_F:
         post_g = posterior_g(bwd_g, fwd_g)
         pars.prev_tau[:] = pars.tau
-        pars.tau = update_tau_only(pars.tau, data, post_g)
+        pars.tau = update_tau_only(pars.F, pars.tau, data, post_g)
 
     if O.update_eb:
         pars.prev_e, pars.prev_b = pars.e, pars.b
