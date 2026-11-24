@@ -41,12 +41,12 @@ def calc_fstats(sfs, pop_list=None, name="XXX"):
     else:
         f3s = pd.DataFrame(columns=["rep", "f3", "X", "A", "B"])
 
-    pops2 = [*pops, f"{name}"]
-    if len(pops2) >= 4:
-        for A, B in itertools.combinations(pops2, 2):
-            for C, D in itertools.combinations(pops2, 2):
-                if len(set((A, B, C, D))) == 4:
-                    f4s.append(single_f4_permuted(pis, A, B, C, D))
+    populations = dict.fromkeys([*pops, f"{name}"])
+    for A, B, C, D in itertools.combinations(populations, 4):
+        # Each of the three pairings expands to eight signed permutations.
+        f4s.append(single_f4_permuted(pis, A, B, C, D))
+        f4s.append(single_f4_permuted(pis, A, C, B, D))
+        f4s.append(single_f4_permuted(pis, A, D, B, C))
 
     if len(f4s) > 0:
         f4s = pd.concat(f4s).reset_index()
