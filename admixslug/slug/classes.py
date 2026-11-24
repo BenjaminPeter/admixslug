@@ -348,6 +348,7 @@ class SlugReads:
         else:
             flipped = np.zeros(snp.shape[0], bool)
 
+        snp = snp.reset_index(drop=True)
         sfs, SNP2SFS = obs2sfs(snp, flipped, states, max_states, sex_chroms=sex_chroms)
 
         chroms = pd.unique(snp.chrom)
@@ -426,6 +427,7 @@ class SlugReads:
         else:
             flipped = np.zeros(snp.shape[0], bool)
 
+        snp = snp.reset_index(drop=True)
         sfs, SNP2SFS = obs2sfs(snp, flipped, states, max_states, sex_chroms=sex_chroms)
 
         chroms = pd.unique(snp.chrom)
